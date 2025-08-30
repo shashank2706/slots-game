@@ -30,15 +30,35 @@ export class Reel {
     }
 
     private createSymbols(): void {
-        // Create symbols for the reel, arranged horizontally
+        // Create symbols for the reel, arranged horizontally with extra hidden symbol for smoothness
+        const totalSymbols: number = this.symbolCount + 1;
+        for (let i = 0; i < totalSymbols; i++) {
+            const sym: PIXI.Sprite = this.createRandomSymbol();
+            sym.width = this.symbolSize;
+            sym.height = this.symbolSize;
+            sym.anchor.set(0.5, 0.5); // visually center in each cell
+            sym.x = i * this.symbolSize + this.symbolSize * 0.5;
+            sym.y = this.symbolSize * 0.5;
+            this.container.addChild(sym);
+            this.symbols.push(sym);
+        }
     }
 
     private createRandomSymbol(): PIXI.Sprite {
-        // TODO:Get a random symbol texture
+        // Pick a random texture name
+        const symName: string = SYMBOL_TEXTURES[(Math.random() * SYMBOL_TEXTURES.length) | 0];
 
-        // TODO:Create a sprite with the texture
+        let symTexture: PIXI.Texture = AssetLoader.getTexture(symName);
 
-        return new PIXI.Sprite();
+        if (!symTexture) {
+            console.warn(`Texture "${symName}" not found in AssetLoader cache, using PIXI.Texture.from`);
+            symTexture = PIXI.Texture.from(`assets/images/${symName}`);
+        }
+
+        // Create a sprite with the texture
+        const symSprite: PIXI.Sprite = new PIXI.Sprite(symTexture); 
+
+        return symSprite;
     }
 
     public update(delta: number): void {
