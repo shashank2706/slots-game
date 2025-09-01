@@ -118,7 +118,7 @@ export class SlotMachine {
         this.isSpinning = true;
 
         // Play spin sound
-        sound.play('Reel spin');
+        sound.play('Reel spin', { loop: true, volume: 1 });
 
         // Disable spin button
         if (this.spinButton) {
@@ -149,6 +149,7 @@ export class SlotMachine {
                 // If this is the last reel, check for wins and enable spin button
                 if (i === this.reels.length - 1) {
                     setTimeout(() => {
+                        sound.stop('Reel spin');
                         this.checkWin();
                         this.isSpinning = false;
 
