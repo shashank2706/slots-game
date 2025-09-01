@@ -1,3 +1,33 @@
+# Slots Game – Technical Test
+
+## Completed Tasks
+
+- Implemented all `TODO`s across the project.
+- Reels implemented with smooth **horizontal spinning** and correct stop alignment.
+- Sound player implemented using **Howler.js**.
+- Refactored code for readability and consistency.
+- Added **unit tests** (Jest + ts-jest + jsdom).
+
+---
+
+## Installation & Setup
+
+### 1. Install dependencies
+```bash
+npm install
+```
+
+### 2. Run the game
+```bash
+npm run start
+```
+
+### 3. Run tests
+```bash
+npm run test
+```
+
+---
 
 # Technical Test Instructions
 
