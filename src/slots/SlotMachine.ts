@@ -171,7 +171,17 @@ export class SlotMachine {
             console.log('Winner!');
 
             if (this.winAnimation) {
-                // TODO: Play the win animation found in "big-boom-h" spine
+                // Play the win animation
+                this.winAnimation.visible = true;
+                if (this.winAnimation.state.hasAnimation('start')) {
+                    this.winAnimation.state.setAnimation(0, 'start', false);
+                }
+
+                this.winAnimation.state.addListener({
+                    complete: () => {
+                        this.winAnimation!.visible = false;
+                    }
+                });
             }
         }
     }
@@ -200,8 +210,8 @@ export class SlotMachine {
             if (winSpineData) {
                 this.winAnimation = new Spine(winSpineData.spineData);
 
-                this.winAnimation.x = (REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1)) / 2;
-                this.winAnimation.y = (SYMBOL_SIZE * SYMBOLS_PER_REEL) / 2;
+                this.winAnimation.x = (SYMBOL_SIZE * SYMBOLS_PER_REEL) / 2;
+                this.winAnimation.y = (REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1)) / 2;
 
                 this.winAnimation.visible = false;
 
