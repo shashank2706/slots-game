@@ -40,6 +40,16 @@ class SoundPlayer {
   pause(alias: string): void { this.sounds[alias]?.pause(); }
   isPlaying(alias: string): boolean { return !!this.sounds[alias]?.playing(); }
 
+  setVolume(alias: string, volume: number): void {
+    const s = this.sounds[alias];
+    if (s) s.volume(Math.max(0, Math.min(1, volume)));
+  }
+
+  setLoop(alias: string, loop: boolean): void {
+    const s = this.sounds[alias];
+    if (s) s.loop(loop);
+  }
+
   setMasterVolume(v: number): void { Howler.volume(Math.max(0, Math.min(1, v))); }
   muteAll(muted: boolean): void { Howler.mute(muted); }
 

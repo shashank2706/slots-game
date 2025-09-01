@@ -43,7 +43,7 @@ export class UI {
     }
 
     private onSpinButtonClick(): void {
-        sound.play('Spin button');
+        sound.play('Spin_button');
 
         this.slotMachine.spin();
     }

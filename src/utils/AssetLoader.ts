@@ -25,9 +25,9 @@ const SPINES = [
 
 
 const SOUNDS = [
-    'Reel spin.webm',
+    'Reel_spin.webm',
     'win.webm',
-    'Spin button.webm',
+    'Spin_button.webm',
 ];
 
 const textureCache: Record<string, PIXI.Texture> = {};
