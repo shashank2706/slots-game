@@ -7,22 +7,26 @@ import {Spine} from "pixi-spine";
 
 const REEL_COUNT = 4;
 const SYMBOLS_PER_REEL = 6;
+const SYMBOLS_COUNT = 5;
 const SYMBOL_SIZE = 150;
 const REEL_HEIGHT = SYMBOL_SIZE;
 const REEL_SPACING = 10;
 
 export class SlotMachine {
     public container: PIXI.Container;
+    private reelsContainer: PIXI.Container;
     private reels: Reel[];
     private app: PIXI.Application;
     private isSpinning: boolean = false;
     private spinButton: PIXI.Sprite | null = null;
     private frameSpine: Spine | null = null;
     private winAnimation: Spine | null = null;
+    private reelGrid: number[][] = [];
 
     constructor(app: PIXI.Application) {
         this.app = app;
         this.container = new PIXI.Container();
+        this.reelsContainer = new PIXI.Container();
         this.reels = [];
 
         // Center the slot machine
@@ -32,6 +36,7 @@ export class SlotMachine {
         this.createBackground();
 
         this.createReels();
+        this.createReelsMask();
 
         this.initSpineAnimations();
     }
@@ -58,9 +63,46 @@ export class SlotMachine {
         for (let i = 0; i < REEL_COUNT; i++) {
             const reel = new Reel(SYMBOLS_PER_REEL, SYMBOL_SIZE);
             reel.container.y = i * (REEL_HEIGHT + REEL_SPACING);
-            this.container.addChild(reel.container);
+            this.reelsContainer.addChild(reel.container);
             this.reels.push(reel);
         }
+        this.container.addChild(this.reelsContainer);
+    }
+
+    private createReelsMask(): void {
+        // Visible window dimensions for all reels together
+        const maskWidth = SYMBOL_SIZE * SYMBOLS_PER_REEL;
+        const maskHeight = REEL_COUNT * REEL_HEIGHT + REEL_SPACING * (REEL_COUNT - 1);
+
+        const mask = new PIXI.Graphics();
+        mask.beginFill(0xffffff, 1);
+        mask.drawRoundedRect(0, 0, maskWidth, maskHeight, 16); // radius=16; use 0 for sharp corners
+        mask.endFill();
+
+        // Mask sits in the same local space as reelsContainer children
+        mask.x = 0;
+        mask.y = 0;
+
+        // Don’t intercept events
+        (mask as any).eventMode = 'none';
+        (mask as any).interactive = false;
+
+        // Attach and assign mask (only to reelsContainer)
+        this.reelsContainer.addChild(mask);
+        this.reelsContainer.mask = mask;
+    }
+
+    private getReelStopGrid(): number[][] {
+        this.reelGrid = [];
+        for (let i = 0; i < REEL_COUNT; i++) {
+            let reel: number[] = [];
+            for (let j = 0; j < SYMBOLS_PER_REEL; j++) {
+                let sym: number = Math.random() * SYMBOLS_COUNT | 0;
+                reel.push(sym);
+            }
+            this.reelGrid.push(reel);
+        }
+        return this.reelGrid
     }
 
     public update(delta: number): void {
@@ -98,9 +140,11 @@ export class SlotMachine {
     }
 
     private stopSpin(): void {
+        const reelGrid: number[][] = this.getReelStopGrid();
+
         for (let i = 0; i < this.reels.length; i++) {
             setTimeout(() => {
-                this.reels[i].stopSpin();
+                this.reels[i].stopSpin(reelGrid[i]);
 
                 // If this is the last reel, check for wins and enable spin button
                 if (i === this.reels.length - 1) {
